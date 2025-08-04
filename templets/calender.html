@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Task Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FullCalendar CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f9fafb;
+            --dark: #1f2937;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e5e7eb;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-todo {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-in-progress {
+            background-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+
+        /* Expanded size for the calendar */
+        .calendar-container {
+            width: 1000px; /* Set a fixed width for the calendar */
+            height: 800px; /* Increased height */
+            margin: 0 auto; /* Center the calendar */
+        }
+
+        @media (max-width: 768px) {
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+            .calendar-container {
+                width: 100%; /* Full width on smaller screens */
+                height: auto; /* Adjust height for smaller screens */
+            }
+        }
+        .logo-img {
+            height: 90px;     /* Adjust as needed */
+            width: 130px;      /* Preserves aspect ratio */
+              /* Ensures image scales nicely */
+            display: block;
+            margin: 0 auto;   /* Center the image horizontally */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex">
+       <div class="w-64 bg-white shadow-md h-screen sticky top-0 hidden md:block">
+                <div class=" flex items-center justify-center border-b">
+                <a href="{%url 'home' %}"><img src="{% static 'logo1.png' %}"
+                    alt="TaskFlow Logo with minimalist design in purple gradient"
+                    class="logo-img" /></a>
+                </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'dashbord' %}" class="flex items-center space-x-2 text-gray-600  hover:text-purple-600  p-2 rounded-lg ">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'userpage' %}" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600   font-medium p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                
+                    <a href="{% url 'task_calendar_view' %}" 
+                    class="flex items-center space-x-2 p-2 rounded-lg 
+                    {% if request.resolver_match.url_name == 'task_calendar_view' %}
+                        bg-purple-50 text-purple-600 font-medium
+                    {% else %}
+                        text-gray-600 hover:text-purple-600 hover:bg-purple-50
+                    {% endif %}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                    </a>
+                <a href="{% url 'update_profile' %}" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="flex-1 overflow-x-hidden">
+            <header class="bg-white shadow-sm sticky top-0 z-10">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <div class="flex items-center space-x-4">
+                        <button class="md:hidden text-gray-500">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            {% if user_profile and user_profile.profile_image %}
+                            <img src="{{ user_profile.profile_image.url }}" alt="User profile picture showing a professional headshot" class="w-8 h-8 rounded-full">
+                            {% endif %}
+                            <span class="text-sm font-medium">{{ request.user.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+                <main class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="col-span-full bg-white rounded-lg shadow p-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Task Calendar</h2>
+                            <div id="taskCalendar" class="calendar-container bg-white p-4 rounded-md shadow-inner"></div>
+                        </div>
+                    </div>
+                </main>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('taskCalendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                events: "{% url 'calender' %}", // Create a route that maps to task_calendar_data view
+            });
+            calendar.render();
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Task Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f9fafb;
+            --dark: #1f2937;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e5e7eb;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-todo {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-in-progress {
+            background-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .logo-img {
+            height: 90px;     /* Adjust as needed */
+            width: 130px;      /* Preserves aspect ratio */
+              /* Ensures image scales nicely */
+            display: block;
+            margin: 0 auto;   /* Center the image horizontally */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        
+       <div class="w-64 bg-white shadow-md h-screen sticky top-0 hidden md:block">
+                <div class=" flex items-center justify-center border-b">
+                <a href="{%url 'home' %}"><img src="{% static 'logo1.png' %}"
+                    alt="TaskFlow Logo with minimalist design in purple gradient"
+                    class="logo-img" /></a>
+                </div>
+
+            <nav class="p-4 space-y-2">
+                <a href="#" class="flex items-center space-x-2 text-purple-600 font-medium p-2 rounded-lg bg-purple-50">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'userpage'%}" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="{% url 'task_calendar_view'%}" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendar</span>
+                </a>
+                {% if room_name %}
+                <a href="{% url 'chat' room_name %}"" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Chat</span>
+                </a>
+                {% endif %}
+                <a href="{%url 'update_profile'%}" class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 p-2 rounded-lg hover:bg-purple-50">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+
+       
+        <div class="flex-1 overflow-x-hidden">
+          
+            <header class="bg-white shadow-sm sticky top-0 z-10">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <div class="flex items-center space-x-4">
+                        <button class="md:hidden text-gray-500">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            {% if user_profile and user_profile.profile_image %}
+                            <img src="{{ user_profile.profile_image.url }}" alt="User profile picture showing a professional headshot" class="w-8 h-8 rounded-full">
+                            {% endif %}
+                            <span class="text-sm font-medium">{{request.user.username}}</span>  
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <main class="p-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Tasks</p>
+                                <h3 class="text-2xl font-bold mt-1">{{total_count}}</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>Completed</span>
+                                <span>{{ completed_count }}/{{total_count}}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-purple-600" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">In Progress</p>
+                                <h3 class="text-2xl font-bold mt-1">{{ inprogress_count }}</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-spinner"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>Completion</span>
+                                <span>33%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-blue-600" style="width: 33%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Pending</p>
+                                <h3 class="text-2xl font-bold mt-1">{{ pending_count }}</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>Total</span>
+                                <span>{{total_count}}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-red-600" style="width: 12.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Upcoming Deadline</p>
+                                <h3 class="text-2xl font-bold mt-1">{{nearest_due}}</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>Tasks due</span>
+                                <span>5</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-yellow-600" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class=" mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Task Status Overview</h2><br>
+                        <div class="bg-purple-50 p-4 rounded-lg mb-4 shadow-sm">
+                            <h3 class="text-md font-semibold text-purple-700 mb-1">Urgent Task Highlight</h3>
+                            {% if nearest_due %}
+                                <p class="text-sm text-gray-700">
+                                    <strong>{{ nearest_due.title }}</strong> is due on <strong>{{ nearest_due.end_date }}</strong>  
+                                    <br>Status: <span class="text-orange-600">{{ nearest_due.status }}</span>  
+                                    <br>Priority: <span class="font-medium text-red-600">{{ nearest_due.priority }}</span>
+                                </p>
+                            {% else %}
+                                <p class="text-sm text-gray-500">No upcoming urgent tasks found.</p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div>
+                        
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="taskStatusChart"></canvas>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Recently Completed Tasks</h2>
+                            <button class="text-purple-600 text-sm font-medium">View All</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="task-card bg-white border rounded-lg p-4 transition-all duration-200 cursor-pointer">
+                                <div class="flex justify-between items-start">
+                             <div>
+                                        <h3 class="font-medium text-gray-800">{{recent_completed}}</h3>
+                                        <p class="text-sm text-gray-500 mt-1">Due May 15</p>
+                                    </div>
+                                    <span class="status-badge status-todo">completed</span>
+                                </div>
+                                <div class="progress-bar mt-3">
+                                    <div class="progress-fill bg-gray-300" style="width: 10%"></div>
+                                </div>
+                            </div>
+
+                           
+                        </div>
+                    </div>
+
+                     
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors">
+                                <span class="text-gray-700">Create New Task</span>
+                                <i class="fas fa-plus text-purple-600"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors">
+                                <span class="text-gray-700">Start Time Tracking</span>
+                                <i class="fas fa-play text-purple-600"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors">
+                                <span class="text-gray-700">Generate Report</span>
+                                <i class="fas fa-file-alt text-purple-600"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors">
+                                <span class="text-gray-700">Invite Team Member</span>
+                                <i class="fas fa-user-plus text-purple-600"></i>
+                            </button>
+                        </div>
+
+                        <h2 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Recent Activity</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-purple-100 text-purple-600 rounded-full">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium">You completed "Fix Authentication Bug"</p>
+                                    <p class="text-xs text-gray-500">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-blue-100 text-blue-600 rounded-full">
+                                    <i class="fas fa-comment"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium">New comment on "Dashboard Design"</p>
+                                    <p class="text-xs text-gray-500">Yesterday</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-green-100 text-green-600 rounded-full">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium">Task "API Documentation" was approved</p>
+                                    <p class="text-xs text-gray-500">May 10</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize task status chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('taskStatusChart').getContext('2d');
+            const taskStatusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'To Do', 'Overdue'],
+                    datasets: [{
+                        data: [12, 8, 4, 3],
+                        backgroundColor: [
+                            '#10b981',
+                            '#3b82f6',
+                            '#e5e7eb',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintain
+
+
+
+// <!DOCTYPE html>
+// <html>
+// <head>
+//     <title>Dashboard</title>
+//     <style>
+//         body { font-family: Arial, sans-serif; padding: 20px; }
+//         h2 { color: #333; }
+//         .section { margin-bottom: 30px; }
+//         .stats span { margin-right: 20px; font-weight: bold; }
+//         ul { list-style-type: none; padding: 0; }
+//         li { padding: 5px 0; border-bottom: 1px solid #eee; }
+//         .pending { color: #d35400; }
+//         .inprogress { color: #2980b9; }
+//         .completed { color: #27ae60; }
+//     </style>
+// </head>
+// <body>
+//     <h1>Welcome to Your Task Dashboard</h1>
+
+//     <div class="section stats">
+//         <span class="pending">Pending: {{ pending_count }}</span>
+//         <span class="inprogress">In Progress: {{ inprogress_count }}</span>
+//         <span class="completed">Completed: {{ completed_count }}</span>
+//     </div>
+
+//     <div class="section pending">
+//         <h2>Pending Tasks</h2>
+//         <ul>
+//             {% for task in pending_tasks %}
+//                 <li>{{ task.title }} - {{ task.deadline }}</li>
+//             {% empty %}
+//                 <li>No pending tasks.</li>
+//             {% endfor %}
+//         </ul>
+//     </div>
+
+//     <div class="section inprogress">
+//         <h2>In Progress Tasks</h2>
+//         <ul>
+//             {% for task in inprogress_tasks %}
+//                 <li>{{ task.title }} - {{ task.deadline }}</li>
+//             {% empty %}
+//                 <li>No tasks in progress.</li>
+//             {% endfor %}
+//         </ul>
+//     </div>
+
+//     <div class="section completed">
+//         <h2>Completed Tasks</h2>
+//         <ul>
+//             {% for task in completed_tasks %}
+//                 <li>{{ task.title }} - {{ task.deadline }}</li>
+//             {% empty %}
+//                 <li>No completed tasks.</li>
+//             {% endfor %}
+//         </ul>
+//     </div>
+// </body>
+// </html>

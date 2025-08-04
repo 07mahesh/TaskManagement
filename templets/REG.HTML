@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Register Now</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            height: 120vh;
+            display: flex;
+            align-items: center;
+            padding: 100px;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .card {
+            border-radius: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: none;
+            height: 100vh;
+            width: 700px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            border-bottom: none;
+        }
+        
+        .card-body {
+            padding: 2rem;
+            overflow-y: auto;
+            height: calc(100vh - 76px);
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e1e1e1;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .social-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-google {
+            background-color: #ffffff;
+            color: #757575;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .btn-google:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-facebook {
+            background-color: #4267B2;
+            color: white;
+        }
+        
+        .btn-facebook:hover {
+            background-color: #3B5998;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 5;
+        }
+        
+        .password-toggle:hover {
+            color: var(--dark-color);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #e0e0e0;
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6c757d;
+        }
+        
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .password-strength {
+            height: 5px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+        }
+        
+        .password-hints {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        
+        .password-hints ul {
+            padding-left: 1rem;
+            margin-bottom: 0;
+        }
+        
+        .password-hints li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .terms-check {
+            font-size: 0.9rem;
+        }
+        
+        .terms-check a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .terms-check a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="m-0 p-0">
+    <div class="container-fluid px-0">
+        <div class="row g-0 min-vh-100">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+                <div style="width: 100%; max-width: 600px;">
+                <div class="card">
+                    <div class="card-header gradient-bg">
+                        <h3>Create Your Account</h3>
+                        <p class="mb-0">Join our community today</p>
+                    </div>
+                    <div class="card-body">
+
+                        <form id="signupForm" method="POST">
+                            {% csrf_token %}
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name"  required>
+                                    <div class="invalid-feedback">
+                                        Please provide your first name.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name="last_name" id="last_name" required>
+                                    <div class="invalid-feedback">
+                                        Please provide your last name.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="username" name="username" class="form-control" id="username" required>
+                                <div class="invalid-feedback">
+                                    Please provide a valid Username.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" name="email" class="form-control" id="email" required>
+                                <div class="invalid-feedback">
+                                    Please provide a valid email address.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number (Optional)</label>
+                                <input type="tel" class="form-control" id="phone">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password1" class="form-label">Password</label>
+                                <div class="position-relative">
+                                    <input type="password1" name="password1" class="form-control" id="password1" required>
+                                    <span class="password-toggle" onclick="togglePassword('password', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid password.
+                                    </div>
+                                </div>
+                                <div class="password-strength">
+                                    <div class="strength-meter" id="passwordStrength"></div>
+                                </div>
+                                <div class="password-hints">
+                                    <small>Password must contain:</small>
+                                    <ul>
+                                        <li id="lengthCheck">At least 8 characters</li>
+                                        <li id="uppercaseCheck">At least one uppercase letter</li>
+                                        <li id="numberCheck">At least one number</li>
+                                        <li id="specialCheck">At least one special character</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <div class="position-relative">
+                                    <input type="password2" name="password2" class="form-control" id="password2" required>
+                                    <span class="password-toggle" onclick="togglePassword('password2', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                    <div class="invalid-feedback">
+                                        Passwords do not match.
+                                    </div>
+                                </div>
+                            </div>
+                            <h6>Select Your Role</h6>
+                            <div class="mb-3">
+                                <select name="role" class="form-control" required>
+                                <option value="">-- Select Role --</option>
+                                <option value="admin">admin</option>
+                                <option value="users">users</option>
+                                </select>
+                            </div>
+                            <br>
+                                <h6>select your profile-picss</h6>
+                                <div class="form-control mb-3"  >
+                                <input type="file" name="profile_image" accept="image/*">
+                                </div>
+
+                            
+                            <div class="mb-4">
+                                <div class="form-check terms-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the <a href="{% url 'policy' %}">Terms of Service</a> and <a href="{% url 'policy' %}">Privacy Policy</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must agree before submitting.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mb-3" value="Register">
+                                <i class="fas fa-user-plus me-2"></i> Register Now
+                            </button>
+                            
+                            <div class="divider">
+                                <span>OR</span>
+                            </div>
+                            
+                            <a href="#" class="social-btn btn-google mb-2">
+                                <i class="fab fa-google me-2"></i> Sign up with Google
+                            </a>
+                            <a href="#" class="social-btn btn-facebook">
+                                <i class="fab fa-facebook-f me-2"></i> Sign up with Facebook
+                            </a>
+                            
+                            <div class="login-link">
+                                Already have an account? <a href="#">Sign in</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Password toggle visibility
+        function togglePassword(id, element) {
+            const passwordInput = document.getElementById(id);
+            const icon = element.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const hints = {
+                length: document.getElementById('lengthCheck'),
+                uppercase: document.getElementById('uppercaseCheck'),
+                number: document.getElementById('numberCheck'),
+                special: document.getElementById('specialCheck')
+            };
+            
+            let strength = 0;
+            
+            // Check password length
+            if (password.length >= 8) {
+                strength += 25;
+                hints.length.style.textDecoration = 'line-through';
+                hints.length.style.color = '#28a745';
+            } else {
+                hints.length.style.textDecoration = 'none';
+                hints.length.style.color = '#6c757d';
+            }
+            
+            // Check for uppercase letters
+            if (/[A-Z]/.test(password)) {
+                strength += 25;
+                hints.uppercase.style.textDecoration = 'line-through';
+                hints.uppercase.style.color = '#28a745';
+            } else {
+                hints.uppercase.style.textDecoration = 'none';
+                hints.uppercase.style.color = '#6c757d';
+            }
+            
+            // Check for numbers
+            if (/[0-9]/.test(password)) {
+                strength += 25;
+                hints.number.style.textDecoration = 'line-through';
+                hints.number.style.color = '#28a745';
+            } else {
+                hints.number.style.textDecoration = 'none';
+                hints.number.style.color = '#6c757d';
+            }
+            
+            // Check for special characters
+            if (/[^A-Za-z0-9]/.test(password)) {
+                strength += 25;
+                hints.special.style.textDecoration = 'line-through';
+                hints.special.style.color = '#28a745';
+            } else {
+                hints.special.style.textDecoration = 'none';
+                hints.special.style.color = '#6c757d';
+            }
+            
+            // Update strength meter
+            strengthBar.style.width = `${strength}%`;
+            
+            // Update color based on strength
+            if (strength < 50) {
+                strengthBar.style.backgroundColor = '#dc3545';
+            } else if (strength < 75) {
+                strengthBar.style.backgroundColor = '#fd7e14';
+            } else {
+                strengthBar.style.backgroundColor = '#28a745';
+            }
+        });
+        
+        // Form validation
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordMatch = password === confirmPassword;
+            
+            // Validate password match
+            if (!passwordMatch) {
+                document.getElementById('confirmPassword').classList.add('is-invalid');
+            } else {
+                document.getElementById('confirmPassword').classList.remove('is-invalid');
+            }
+            
+            // Check if form is valid
+            if (form.checkValidity() && passwordMatch) {
+                // Form is valid - you would typically send data to server here
+                alert('Registration successful! You will be redirected to your dashboard.');
+                // window.location.href = "dashboard.html"; // Redirect to dashboard
+                
+                // Reset form
+                form.reset();
+                
+                // Reset password strength meter
+                document.getElementById('passwordStrength').style.width = '0%';
+                
+                // Reset password hints
+                const hints = document.querySelectorAll('.password-hints li');
+                hints.forEach(hint => {
+                    hint.style.textDecoration = 'none';
+                    hint.style.color = '#6c757d';
+                });
+                
+                // Remove validation classes
+                const inputs = form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.classList.remove('is-invalid');
+                });
+            } else {
+                // Form is invalid
+                const inputs = form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.classList.add('is-invalid');
+                    }
+                });
+            }
+            
+            form.classList.add('was-validated');
+        });
+        
+        // Initialize Bootstrap tooltips (for future enhancements)
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+</body>
+</html>
+
+
+
+<!-- 
+<h2>Register</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit">
+</form> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f0f0f0;
+        }
+        .register-box {
+            width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+        .register-box h2 {
+            text-align: center;
+        }
+        .register-box input[type="text"],
+        .register-box input[type="email"],
+        .register-box input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .register-box input[type="submit"] {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-box">
+        <h2>User Registration</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="first_name" placeholder="First Name" required>
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+</body>
+</html> -->
